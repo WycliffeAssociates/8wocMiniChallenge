@@ -1,0 +1,26 @@
+{
+  "name": "8woc-mini-challenge",
+  "version": "1.0.0",
+  "description": "Requirements:\r  - npm\r  - Bower",
+  "main": "index.js",
+  "dependencies": {
+    "browserify": "^13.0.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WycliffeAssociates/8wocMiniChallenge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WycliffeAssociates/8wocMiniChallenge/issues"
+  },
+  "homepage": "https://github.com/WycliffeAssociates/8wocMiniChallenge#readme"
+}
