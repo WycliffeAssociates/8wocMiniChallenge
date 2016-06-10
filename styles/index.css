@@ -1,0 +1,70 @@
+/* Document */
+body,
+html {
+    height: 100%;
+    width: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+ul {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* Navigation */
+.navbar {
+    flex: 0 0 auto;
+    display: flex;
+    margin-bottom: 0;
+    height: 50px;
+}
+.navbar .container-fluid {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+}
+.form-control {
+    display: inline-block;
+    width: auto;
+    margin-right: 1rem;
+}
+.form-control:last-of-type {
+    margin-right: 0;
+}
+
+/* Content Layout */
+.content {
+    height: calc(100% - 50px);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.reading-pane {
+    flex: 1 1 50%;
+}
+.info-pane {
+    flex: 1 1 50%;
+}
+.pane {
+    height: 100%;
+    overflow-y: scroll;
+}
+.pane-content {
+    padding: 1.5rem;
+}
+
+/* Reading Pane */
+.reading-pane h2 {
+    margin-top: 0;
+}
+.verse-number {
+    font-size: 105%;
+    font-weight: bold;
+}
+.verse-number::after {
+    content: '.';
+}
+
+/* Info Pane */
