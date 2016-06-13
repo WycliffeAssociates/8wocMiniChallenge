@@ -33,7 +33,7 @@ function App() {
             readingPane = this.reader.readingPane;
             infoPane = this.reader.infoPane;
 
-            // Populate dropdown
+            // Populate bookSelector
             this.navigator.updateBooks(this.book.bookNames);
 
             // Register listeners
@@ -102,6 +102,10 @@ function Book() {
 		return string;
 	}
 
+	function getChapters(bookName){
+		return Object.keys(bible[bookName]).length;
+	}
+
 	function parseJSON(jsonFile){
 		// console.log(jsonFile);
 		// var	xhttp = new XMLHttpRequest();
@@ -150,6 +154,7 @@ function Book() {
 		return parsedBookJson;
 	}
 
+
 	return {
 
 		bookNames: (function() {
@@ -162,8 +167,7 @@ function Book() {
 		},
 
 		getChapters: function(bookName) {
-			// TODO: Lookup how many chapters in the book specified
-			return 6;
+			return getChapters(bookName);
 		},
 
 		getVerse: function(book, chapter, verse) {
@@ -228,10 +232,9 @@ function Navigator() {
         },
 
         updateChapter: function(chapters) {
-            for (var i = 0; i < chapters; i++) {
-                var chapter = (i + 1).toString(),
-                    el = '<option value="' + chapter + '">' + chapter + '</option>';
-                $(chapterSelector).append(el);
+            for(var i = 1, length = chapters + 1; i < length; i++){
+                var el = '<option value="' + i + '">' + "Chapter " + i + '</option>';
+                $(chapterSelector).append(el) ;
             }
         },
 

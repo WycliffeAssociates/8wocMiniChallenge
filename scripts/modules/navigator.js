@@ -28,10 +28,9 @@ function Navigator() {
         },
 
         updateChapter: function(chapters) {
-            for (var i = 0; i < chapters; i++) {
-                var chapter = (i + 1).toString(),
-                    el = '<option value="' + chapter + '">' + chapter + '</option>';
-                $(chapterSelector).append(el);
+            for(var i = 1, length = chapters + 1; i < length; i++){
+                var el = '<option value="' + i + '">' + "Chapter " + i + '</option>';
+                $(chapterSelector).append(el) ;
             }
         },
 

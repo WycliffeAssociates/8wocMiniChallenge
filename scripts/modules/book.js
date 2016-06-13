@@ -31,6 +31,10 @@ function Book() {
 		return string;
 	}
 
+	function getChapters(bookName){
+		return Object.keys(bible[bookName]).length;
+	}
+
 	function parseJSON(jsonFile){
 		// console.log(jsonFile);
 		// var	xhttp = new XMLHttpRequest();
@@ -79,6 +83,7 @@ function Book() {
 		return parsedBookJson;
 	}
 
+
 	return {
 
 		bookNames: (function() {
@@ -91,8 +96,7 @@ function Book() {
 		},
 
 		getChapters: function(bookName) {
-			// TODO: Lookup how many chapters in the book specified
-			return 6;
+			return getChapters(bookName);
 		},
 
 		getVerse: function(book, chapter, verse) {

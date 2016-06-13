@@ -32,7 +32,7 @@ function App() {
             readingPane = this.reader.readingPane;
             infoPane = this.reader.infoPane;
 
-            // Populate dropdown
+            // Populate bookSelector
             this.navigator.updateBooks(this.book.bookNames);
 
             // Register listeners
