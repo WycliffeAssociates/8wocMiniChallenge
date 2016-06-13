@@ -8,9 +8,9 @@ function App() {
 
     var bookSelector,
         chapterSelector,
+        goButton,
         readingPane,
-        infoPane,
-        content;
+        infoPane;
 
     return {
 
@@ -28,16 +28,13 @@ function App() {
             // Register elements
             bookSelector = this.navigator.bookSelector;
             chapterSelector = this.navigator.chapterSelector;
+            goButton = this.navigator.goButton;
+            readingPane = this.reader.readingPane;
+            infoPane = this.reader.infoPane;
 
             // Register listeners
-            bookSelector.addEventListener('change', function(e) {
-                console.log('bookSelector is changed', e);
-                // this.navigator.updateChapter();
-            });
-            chapterSelector.addEventListener('change', function(e) {
-                console.log('chapterSelector is changed', e);
-                // this.navigator.updateText();
-            });
+            bookSelector.addEventListener('change', this.navigator.updateChapter);
+            goButton.addEventListener('click', this.reader.update);
         }
 
     };
@@ -47,7 +44,6 @@ function App() {
 document.addEventListener('DOMContentLoaded', function() {
 
     var app = window.app = App();
-
     app.init();
 
 });

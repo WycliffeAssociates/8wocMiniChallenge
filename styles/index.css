@@ -30,9 +30,9 @@ ul {
     width: auto;
     margin-right: 1rem;
 }
-.form-control:last-of-type {
+/*.form-control:last-of-type {
     margin-right: 0;
-}
+}*/
 
 /* Content Layout */
 .content {
