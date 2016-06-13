@@ -1,6 +1,6 @@
 'use strict';
 
-function Test() {
+function Info() {
 
     return {
 
@@ -8,4 +8,4 @@ function Test() {
 
 }
 
-exports.Test = Test;
+exports.Info = Info;
