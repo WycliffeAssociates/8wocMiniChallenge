@@ -14,7 +14,7 @@ function Book() {
 
         parseJSON("lib/books/Ephesians.json", 
             function(json){
-                console.log(json);
+                // console.log(json);
                 bible = reconfigureBook(json);
             }
          );
@@ -23,7 +23,7 @@ function Book() {
 
         parseJSON("lib/lexicon/lexicon-eph-english.json", 
             function(json){
-                console.log(json);
+                // console.log(json);
                 lexi = json;
             }
         );
@@ -33,8 +33,8 @@ function Book() {
         var result = "";
         for(var i = 0; i < lexi.length; i++){
             if(lexi[i]["strongs"].includes(strongs)){
-                console.log(lexi[i]["long"]);
-                return lexi[i]["long"];
+                // console.log(lexi[i]["long"]);
+                return lexi[i];
             }
         }
         return result;
@@ -54,9 +54,9 @@ function Book() {
         for(var i =0; i < bible[book][chapter][verse].length; i++){
             var word = bible[book][chapter][verse][i];
             var definition = getDefinition(word["strongs"].replace("G", ""));
-            string += '<a class="verse-word" tabindex="0" role="button" data-toggle="popover" data-html="true" data-strongs="' + word["strongs"] + '"  data-content="';
-            string += '<p class="strongs">Strongs: ' + word["strongs"] + '</p><p class="morph">Morphology: ' + word["morph"] + '</p><p class="define">' + definition + '</p>';
-            string += '">' + word["greek"] + '</a>';
+            string += '<span class="verse-word" tabindex="0" role="button" data-toggle="popover" data-html="true" data-strongs="' + word["strongs"] + '"  data-content="';
+            string += '<p>Strongs: ' + word["strongs"] + '</p><p>Morphology: ' + word["morph"] + '</p><p>' + (definition.long || '') + '</p>';
+            string += '">' + word["greek"] + '</span> ';
         }
         string += '</span>';
         string += '</li>';
@@ -110,12 +110,16 @@ function Book() {
                 } while (m);
                 parsedBookJson["Ephesians"][i.toString()][j.toString()] = [];
                 for(var k = 0; k < results.length; k++){
-                    var temp = {"greek":results[k][1], "strongs":results[k][2], "morph":results[k][3]};
+                    //strongs is different because of a (possibly javascript itself?) bug
+                    var temp = {"greek":results[k][1], "strongs":results[k][0].split(" ")[1], "morph":results[k][3]};
+                    // console.log(verse);
+                    // console.log("strongs", results[k][0].split(" ")[1]);
+                    // console.log("results", results[0]);
                     parsedBookJson["Ephesians"][i.toString()][j.toString()].push(temp);
                 }
             }
         }
-        console.log(parsedBookJson);
+        // console.log(parsedBookJson);
         return parsedBookJson;
     }
 
@@ -150,6 +154,10 @@ function Book() {
                 chapter: chapter,
                 content: string
             };
+        },
+
+        getInfo: function(strongs) {
+            return getDefinition(strongs);
         }
 
     };

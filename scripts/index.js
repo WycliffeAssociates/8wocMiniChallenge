@@ -8,7 +8,8 @@ var Navigator = require('./modules/navigator').Navigator,
 function popoverInit(selector) {
     $(selector).popover({
         placement: 'bottom',
-        trigger: 'hover'
+        trigger: 'hover',
+        html: true
     });
 }
 
@@ -24,6 +25,8 @@ function App() {
     return {
 
         book: new Book(),
+
+        // lexicon: new Lexicon(),
 
         navigator: new Navigator(),
 
@@ -73,7 +76,8 @@ function App() {
             });
 
             $(readingPane).on('click', '.verse-word', function(e) {
-                app.info.update(e.target.dataset.strongs);
+                var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
+                app.info.update(info);
             });
 
             // Initialize bootstrap components

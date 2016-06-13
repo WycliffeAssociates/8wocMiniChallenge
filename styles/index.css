@@ -78,6 +78,7 @@ ul {
 }
 .verse-word {
     color: #333;
+    /*margin-right: 0.5rem;*/
 }
 .verse-word:hover {
     color: #286090;
