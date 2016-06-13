@@ -1,6 +1,6 @@
 var Navigator = require('./modules/navigator').Navigator,
     Reader = require('./modules/reader').Reader,
-    // Book = require('./modules/book').Book,
+    Book = require('./modules/book').Book,
     // Lexicon = require('./modules/lexicon').Lexicon,
     Info = require('./modules/info').Info;
 
@@ -20,7 +20,7 @@ function App() {
 
         info: new Info(),
 
-        // book: new Book(),
+        book: new Book(),
 
         // lexicon: new Lexicon(),
 
