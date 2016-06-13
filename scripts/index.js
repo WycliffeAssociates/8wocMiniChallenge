@@ -4,6 +4,15 @@ var Navigator = require('./modules/navigator').Navigator,
     // Lexicon = require('./modules/lexicon').Lexicon,
     Info = require('./modules/info').Info;
 
+
+function popoverInit(selector) {
+    $(selector).popover({
+        placement: 'bottom',
+        trigger: 'hover'
+    });
+}
+
+
 function App() {
 
     var bookSelector,
@@ -35,6 +44,10 @@ function App() {
             // Populate bookSelector
             this.navigator.updateBooks(this.book.bookNames);
 
+            // Show initial instructions
+            this.reader.showInstruction();
+            this.info.showInstruction();
+
             // Register listeners
             var app = this;
             
@@ -44,16 +57,27 @@ function App() {
                 app.navigator.updateChapter(app.book.getChapters(book));
             });
 
-            goButton.addEventListener('click', function(e) {
+            goButton.addEventListener('click', function() {
                 var book = bookSelector.value,
                     chapter = chapterSelector.value;
 
-                book_object = app.book.getBook(book);
-                app.reader.update(book);
+                if (!book || !chapter) {
+                    return false;
+                } 
+
+                var chapterObject = app.book.getChapter(book, chapter);
+                app.reader.hideInstruction();
+                app.reader.update(chapterObject);
+
+                popoverInit('.verse-word');
+            });
+
+            $(readingPane).on('click', '.verse-word', function(e) {
+                app.info.update(e.target.dataset.strongs);
             });
 
             // Initialize bootstrap components
-            $('.verse-word').popover();
+            popoverInit('.verse-word');
         }
 
     };

@@ -56,15 +56,31 @@ ul {
 }
 
 /* Reading Pane */
+.instruction {
+    font-size: 180%;
+    font-style: italic;
+    text-align: center;
+    color: #AAA;
+}
+.verse {
+    margin-bottom: 0.5rem;
+}
 .reading-pane h2 {
     margin-top: 0;
 }
 .verse-number {
     font-size: 105%;
     font-weight: bold;
+    margin-right: 1rem;
 }
 .verse-number::after {
     content: '.';
+}
+.verse-word {
+    color: #333;
+}
+.verse-word:hover {
+    color: #286090;
 }
 
 /* Info Pane */
