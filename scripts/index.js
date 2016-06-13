@@ -1,36 +1,53 @@
-var Test = require('./modules/test').Test;
+var Navigator = require('./modules/navigator').Navigator,
+    Reader = require('./modules/reader').Reader,
+    // Book = require('./modules/book').Book,
+    // Lexicon = require('./modules/lexicon').Lexicon,
+    Info = require('./modules/info').Info;
 
-window.App = {
+function App() {
 
-    Test: Test('curry'),
+    var bookSelector,
+        chapterSelector,
+        readingPane,
+        infoPane,
+        content;
 
-    el: {
-        bookSelector: undefined,
-        chapterSelector: undefined,
-        readingPane: undefined,
-        infoPane: undefined,
-    },
+    return {
 
-    Book: Material(),
+        navigator: new Navigator(),
 
-    lexicon: Lexicon(),
+        reader: new Reader(),
 
-    init: function() {
-        // Register elements
-        this.el.bookSelector = document.querySelector('#book-selector');
-        this.el.chapterSelector = document.querySelector('#chapter-selector');
-        this.el.readingPane = document.querySelector('.reading-pane');
-        this.el.infoPane = document.querySelector('.info-pane');
-        this.el.content = document.querySelector('.content');
+        info: new Info(),
 
-        // Register listeners
+        // book: new Book(),
 
-    }
+        // lexicon: new Lexicon(),
 
-};
+        init: function() {
+            // Register elements
+            bookSelector = this.navigator.bookSelector;
+            chapterSelector = this.navigator.chapterSelector;
+
+            // Register listeners
+            bookSelector.addEventListener('change', function(e) {
+                console.log('bookSelector is changed', e);
+                // this.navigator.updateChapter();
+            });
+            chapterSelector.addEventListener('change', function(e) {
+                console.log('chapterSelector is changed', e);
+                // this.navigator.updateText();
+            });
+        }
+
+    };
+
+}
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    App.init();
+    var app = window.app = App();
+
+    app.init();
 
 });
