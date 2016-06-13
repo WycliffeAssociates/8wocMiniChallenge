@@ -15,13 +15,13 @@ function App() {
 
     return {
 
+        book: new Book(),
+
         navigator: new Navigator(),
 
         reader: new Reader(),
 
         info: new Info(),
-
-        book: new Book(),
 
         // lexicon: new Lexicon(),
 
@@ -33,9 +33,31 @@ function App() {
             readingPane = this.reader.readingPane;
             infoPane = this.reader.infoPane;
 
+            // Populate dropdown
+            this.navigator.updateBooks(this.book.bookNames);
+
             // Register listeners
-            bookSelector.addEventListener('change', this.navigator.updateChapter);
-            goButton.addEventListener('click', this.reader.update);
+            var app = this;
+            bookSelector.addEventListener('change', function(e) {
+                // TODO: Get new value from bookSelector
+                var book = 'Ephesians',
+                    chapters = app.book.getChapters(bookName);
+
+                app.navigator.updateChapter(chapters);
+            });
+            goButton.addEventListener('click', function(e) {
+                // var selectedBook = app.bookSelector.value(),
+                    // selectedChapter = app.chapterSelector.value();
+                // book = app.book.getBook('Ephesians');
+                // app.reader.update(book);
+
+                var verse = app.book.getVerse('Ephesians', 1, 1);
+                $('.pane-content ul').append(verse);
+                $('.verse-word').popover();
+            });
+
+            // Initialize bootstrap components
+            $('.verse-word').popover();
         }
 
     };
@@ -53,11 +75,16 @@ document.addEventListener('DOMContentLoaded', function() {
 'use strict';
 
 function Book() {
+
 	var bible;
 	var index = 0;
+	var bookNames = [];
 	init();
     
 	function init(){
+		// TODO: Look at lib/books and get all the available book names
+		bookNames = ['Ephesians'];
+
 		parseJSON("lib/books/Ephesians.json");
 		//bible = reconfigureBook(bible);
 		//printVerse("Ephesians", "1", "2");
@@ -73,7 +100,7 @@ function Book() {
 		var string = "";
 		for(var i =0; i < bible[book][chapter][verse].length; i++){
 			var word = bible[book][chapter][verse][i];
-			string += "<span data-strongs=\"" + word["strongs"] + "\" data-morph=\"" + word["morph"] + "\"\>" + word["greek"] + "\<\/span\>";
+			string += "<span class=\"verse-word\" data-toggle=\"popover\" data-content=\"Strongs: " + word["strongs"] + " Morphology: " + word["morph"] + "\"\>" + word["greek"] + " " + "\<\/span\>";
 		}
 		return string;
 	}
@@ -126,6 +153,28 @@ function Book() {
 		return parsedBookJson;
 	}
 
+	return {
+
+		bookNames: (function() {
+			return bookNames;
+		})(),
+
+		//
+		getBook: function(bookName) {
+			return bible;
+		},
+
+		getChapters: function(bookName) {
+			// TODO: Lookup how many chapters in the book specified
+			return 6;
+		},
+
+		getVerse: function(book, chapter, verse) {
+			return getVerse(book, chapter, verse);
+		}
+
+	};
+
 }
 
 exports.Book = Book;
@@ -156,27 +205,38 @@ exports.Info = Info;
 
 function Navigator() {
 
-	var bookSelector = document.querySelector('#book-selector'),
-		chapterSelector = document.querySelector('#chapter-selector'),
-		goButton = document.querySelector('.btn-go');
+    var bookSelector = document.querySelector('#book-selector'),
+        chapterSelector = document.querySelector('#chapter-selector'),
+        goButton = document.querySelector('.btn-go');
+
+    // TODO: Update bookSelector to list bookNames as options
 
     return {
 
-    	bookSelector: (function() {
-    		return bookSelector;
-    	})(),
+        bookSelector: (function() {
+            return bookSelector;
+        })(),
 
-    	chapterSelector: (function() {
-    		return chapterSelector;
-    	})(),
+        chapterSelector: (function() {
+            return chapterSelector;
+        })(),
 
-    	goButton: (function() {
-    		return goButton;
-    	})(),
+        goButton: (function() {
+            return goButton;
+        })(),
 
-    	updateChapter: function(e) {
-    		console.log('updateChapter', e);
-    	},
+        updateBooks: function(bookNames) {
+            console.log('populateDropdown', bookNames);
+            bookNames.forEach(function(bookName) {
+                var el = '<option value="' + bookName + '">' + bookName + '</option>';
+                $(bookSelector).append(el);
+            });
+        },
+
+        updateChapter: function(chapters) {
+            console.log('updateChapter', chapters);
+            // TODO: Reset chapterSelector with the correct number of chapters
+        },
 
     };
 
@@ -196,8 +256,8 @@ function Reader() {
     		return readingPane;
     	})(),
 
-    	update: function(e) {
-    		console.log('update Reader', e);
+    	update: function(book) {
+    		console.log('update Reader', book);
     	}
 
     };

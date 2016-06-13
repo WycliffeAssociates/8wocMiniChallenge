@@ -4,9 +4,13 @@ function Book() {
 
 	var bible;
 	var index = 0;
+	var bookNames = [];
 	init();
     
 	function init(){
+		// TODO: Look at lib/books and get all the available book names
+		bookNames = ['Ephesians'];
+
 		parseJSON("lib/books/Ephesians.json");
 		//bible = reconfigureBook(bible);
 		//printVerse("Ephesians", "1", "2");
@@ -22,7 +26,7 @@ function Book() {
 		var string = "";
 		for(var i =0; i < bible[book][chapter][verse].length; i++){
 			var word = bible[book][chapter][verse][i];
-			string += "<span data-strongs=\"" + word["strongs"] + "\" data-morph=\"" + word["morph"] + "\"\>" + word["greek"] + "\<\/span\>";
+			string += "<span class=\"verse-word\" data-toggle=\"popover\" data-content=\"Strongs: " + word["strongs"] + " Morphology: " + word["morph"] + "\"\>" + word["greek"] + " " + "\<\/span\>";
 		}
 		return string;
 	}
@@ -77,13 +81,22 @@ function Book() {
 
 	return {
 
+		bookNames: (function() {
+			return bookNames;
+		})(),
+
 		//
 		getBook: function(bookName) {
 			return bible;
 		},
 
 		getChapters: function(bookName) {
-			// 
+			// TODO: Lookup how many chapters in the book specified
+			return 6;
+		},
+
+		getVerse: function(book, chapter, verse) {
+			return getVerse(book, chapter, verse);
 		}
 
 	};

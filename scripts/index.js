@@ -14,13 +14,13 @@ function App() {
 
     return {
 
+        book: new Book(),
+
         navigator: new Navigator(),
 
         reader: new Reader(),
 
         info: new Info(),
-
-        book: new Book(),
 
         // lexicon: new Lexicon(),
 
@@ -32,13 +32,31 @@ function App() {
             readingPane = this.reader.readingPane;
             infoPane = this.reader.infoPane;
 
+            // Populate dropdown
+            this.navigator.updateBooks(this.book.bookNames);
+
             // Register listeners
+            var app = this;
             bookSelector.addEventListener('change', function(e) {
-                book = 'Ephesians';
-                var chapters = this.book.getChapters(book);
-                this.navigator.updateChapter(chapters);
+                // TODO: Get new value from bookSelector
+                var book = 'Ephesians',
+                    chapters = app.book.getChapters(bookName);
+
+                app.navigator.updateChapter(chapters);
             });
-            goButton.addEventListener('click', this.reader.update);
+            goButton.addEventListener('click', function(e) {
+                // var selectedBook = app.bookSelector.value(),
+                    // selectedChapter = app.chapterSelector.value();
+                // book = app.book.getBook('Ephesians');
+                // app.reader.update(book);
+
+                var verse = app.book.getVerse('Ephesians', 1, 1);
+                $('.pane-content ul').append(verse);
+                $('.verse-word').popover();
+            });
+
+            // Initialize bootstrap components
+            $('.verse-word').popover();
         }
 
     };

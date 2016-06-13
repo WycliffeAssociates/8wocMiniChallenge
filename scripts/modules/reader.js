@@ -10,8 +10,8 @@ function Reader() {
     		return readingPane;
     	})(),
 
-    	update: function(e) {
-    		console.log('update Reader', e);
+    	update: function(book) {
+    		console.log('update Reader', book);
     	}
 
     };
