@@ -30,9 +30,6 @@ ul {
     width: auto;
     margin-right: 1rem;
 }
-/*.form-control:last-of-type {
-    margin-right: 0;
-}*/
 
 /* Content Layout */
 .content {
@@ -71,7 +68,6 @@ ul {
 .verse-number {
     font-size: 105%;
     font-weight: bold;
-    margin-right: 1rem;
 }
 .verse-number::after {
     content: '.';
