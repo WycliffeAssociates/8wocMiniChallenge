@@ -23,7 +23,6 @@ function Navigator() {
         })(),
 
         updateBooks: function(bookNames) {
-            console.log('populateDropdown', bookNames);
             bookNames.forEach(function(bookName) {
                 var el = '<option value="' + bookName + '">' + bookName + '</option>';
                 $(bookSelector).append(el);
@@ -31,8 +30,11 @@ function Navigator() {
         },
 
         updateChapter: function(chapters) {
-            console.log('updateChapter', chapters);
-            // TODO: Reset chapterSelector with the correct number of chapters
+            for (var i = 0; i < chapters; i++) {
+                var chapter = (i + 1).toString(),
+                    el = '<option value="' + chapter + '">' + chapter + '</option>';
+                $(chapterSelector).append(el);
+            }
         },
 
     };

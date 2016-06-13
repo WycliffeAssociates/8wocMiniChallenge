@@ -38,8 +38,7 @@ function App() {
             // Register listeners
             var app = this;
             bookSelector.addEventListener('change', function(e) {
-                // TODO: Get new value from bookSelector
-                var book = 'Ephesians',
+                var bookName = bookSelector.value,
                     chapters = app.book.getChapters(bookName);
 
                 app.navigator.updateChapter(chapters);
@@ -50,9 +49,9 @@ function App() {
                 // book = app.book.getBook('Ephesians');
                 // app.reader.update(book);
 
-                var verse = app.book.getVerse('Ephesians', 1, 1);
-                $('.pane-content ul').append(verse);
-                $('.verse-word').popover();
+                // var verse = app.book.getVerse('Ephesians', 1, 1);
+                // $('.pane-content ul').append(verse);
+                // $('.verse-word').popover();
             });
 
             // Initialize bootstrap components
