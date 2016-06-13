@@ -84,3 +84,6 @@ ul {
 }
 
 /* Info Pane */
+.info-pane h2 {
+    margin-top: 0;
+}
