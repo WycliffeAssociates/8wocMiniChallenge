@@ -6,8 +6,6 @@ function Navigator() {
         chapterSelector = document.querySelector('#chapter-selector'),
         goButton = document.querySelector('.btn-go');
 
-    // TODO: Update bookSelector to list bookNames as options
-
     return {
 
         bookSelector: (function() {

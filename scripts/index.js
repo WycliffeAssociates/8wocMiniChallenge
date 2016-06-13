@@ -37,21 +37,19 @@ function App() {
 
             // Register listeners
             var app = this;
+            
             bookSelector.addEventListener('change', function(e) {
-                var bookName = bookSelector.value,
-                    chapters = app.book.getChapters(bookName);
+                var book = bookSelector.value;
 
-                app.navigator.updateChapter(chapters);
+                app.navigator.updateChapter(app.book.getChapters(book));
             });
-            goButton.addEventListener('click', function(e) {
-                // var selectedBook = app.bookSelector.value(),
-                    // selectedChapter = app.chapterSelector.value();
-                // book = app.book.getBook('Ephesians');
-                // app.reader.update(book);
 
-                // var verse = app.book.getVerse('Ephesians', 1, 1);
-                // $('.pane-content ul').append(verse);
-                // $('.verse-word').popover();
+            goButton.addEventListener('click', function(e) {
+                var book = bookSelector.value,
+                    chapter = chapterSelector.value;
+
+                book_object = app.book.getBook(book);
+                app.reader.update(book);
             });
 
             // Initialize bootstrap components
