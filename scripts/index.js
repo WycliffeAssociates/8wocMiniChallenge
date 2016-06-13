@@ -50,8 +50,8 @@ function App() {
                 // book = app.book.getBook('Ephesians');
                 // app.reader.update(book);
 
-                var verse = app.book.getVerse('Ephesians', 1, 1);
-                $('.pane-content ul').append(verse);
+                var chapter = app.book.getChapter('Ephesians', 1);
+                $('.pane-content ul').replaceWith(chapter);
                 $('.verse-word').popover();
             });
 

@@ -51,8 +51,8 @@ function App() {
                 // book = app.book.getBook('Ephesians');
                 // app.reader.update(book);
 
-                var verse = app.book.getVerse('Ephesians', 1, 1);
-                $('.pane-content ul').append(verse);
+                var chapter = app.book.getChapter('Ephesians', 1);
+                $('.pane-content ul').replaceWith(chapter);
                 $('.verse-word').popover();
             });
 
@@ -105,8 +105,15 @@ function Book() {
 		return string;
 	}
 
-	function getChapters(bookName){
+	function getNumChapters(bookName){
 		return Object.keys(bible[bookName]).length;
+	}
+
+	function getNumVerses(bookName, chapter){
+		if(typeof chapter === 'number'){
+			chapter = chapter.toString();
+		}
+		return Object.keys(bible[bookName][chapter]).length;
 	}
 
 	function parseJSON(jsonFile){
@@ -170,11 +177,20 @@ function Book() {
 		},
 
 		getChapters: function(bookName) {
-			return getChapters(bookName);
+			return getNumChapters(bookName);
 		},
 
 		getVerse: function(book, chapter, verse) {
 			return getVerse(book, chapter, verse);
+		},
+
+		getChapter: function(book, chapter, verse){
+			var numVerses = getNumVerses(book, chapter);
+			var string = "";
+			for(var i = 1, length = numVerses+1; i < length; i++){
+				string += getVerse(book, chapter, i) + '</br>';
+			}
+			return string;
 		}
 
 	};
@@ -240,9 +256,10 @@ function Navigator() {
         updateChapter: function(chapters) {
             console.log('updateChapter', chapters);
             // TODO: Reset chapterSelector with the correct number of chapters
+            $(chapterSelector).append(el);
             for(var i = 1; i < chapters+1; i++){
                 var el = '<option value="' + i + '">' + "Chapter " + i + '</option>';
-                $(chapterSelector).append(el) ;
+                $(chapterSelector).append(el);
             }
         },
 

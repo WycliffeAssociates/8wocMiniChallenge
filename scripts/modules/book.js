@@ -31,8 +31,15 @@ function Book() {
 		return string;
 	}
 
-	function getChapters(bookName){
+	function getNumChapters(bookName){
 		return Object.keys(bible[bookName]).length;
+	}
+
+	function getNumVerses(bookName, chapter){
+		if(typeof chapter === 'number'){
+			chapter = chapter.toString();
+		}
+		return Object.keys(bible[bookName][chapter]).length;
 	}
 
 	function parseJSON(jsonFile){
@@ -96,11 +103,20 @@ function Book() {
 		},
 
 		getChapters: function(bookName) {
-			return getChapters(bookName);
+			return getNumChapters(bookName);
 		},
 
 		getVerse: function(book, chapter, verse) {
 			return getVerse(book, chapter, verse);
+		},
+
+		getChapter: function(book, chapter, verse){
+			var numVerses = getNumVerses(book, chapter);
+			var string = "";
+			for(var i = 1, length = numVerses+1; i < length; i++){
+				string += getVerse(book, chapter, i) + '</br>';
+			}
+			return string;
 		}
 
 	};
