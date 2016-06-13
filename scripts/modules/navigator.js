@@ -33,6 +33,10 @@ function Navigator() {
         updateChapter: function(chapters) {
             console.log('updateChapter', chapters);
             // TODO: Reset chapterSelector with the correct number of chapters
+            for(var i = 1; i < chapters+1; i++){
+                var el = '<option value="' + i + '">' + "Chapter " + i + '</option>';
+                $(chapterSelector).append(el) ;
+            }
         },
 
     };

@@ -40,7 +40,7 @@ function App() {
             bookSelector.addEventListener('change', function(e) {
                 // TODO: Get new value from bookSelector
                 var book = 'Ephesians',
-                    chapters = app.book.getChapters(bookName);
+                    chapters = app.book.getChapters(book);
 
                 app.navigator.updateChapter(chapters);
             });

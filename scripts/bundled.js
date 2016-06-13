@@ -41,7 +41,7 @@ function App() {
             bookSelector.addEventListener('change', function(e) {
                 // TODO: Get new value from bookSelector
                 var book = 'Ephesians',
-                    chapters = app.book.getChapters(bookName);
+                    chapters = app.book.getChapters(book);
 
                 app.navigator.updateChapter(chapters);
             });
@@ -105,6 +105,10 @@ function Book() {
 		return string;
 	}
 
+	function getChapters(bookName){
+		return Object.keys(bible[bookName]).length;
+	}
+
 	function parseJSON(jsonFile){
 		// console.log(jsonFile);
 		// var	xhttp = new XMLHttpRequest();
@@ -153,6 +157,7 @@ function Book() {
 		return parsedBookJson;
 	}
 
+
 	return {
 
 		bookNames: (function() {
@@ -165,8 +170,7 @@ function Book() {
 		},
 
 		getChapters: function(bookName) {
-			// TODO: Lookup how many chapters in the book specified
-			return 6;
+			return getChapters(bookName);
 		},
 
 		getVerse: function(book, chapter, verse) {
@@ -236,6 +240,10 @@ function Navigator() {
         updateChapter: function(chapters) {
             console.log('updateChapter', chapters);
             // TODO: Reset chapterSelector with the correct number of chapters
+            for(var i = 1; i < chapters+1; i++){
+                var el = '<option value="' + i + '">' + "Chapter " + i + '</option>';
+                $(chapterSelector).append(el) ;
+            }
         },
 
     };
