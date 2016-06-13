@@ -33,7 +33,11 @@ function App() {
             infoPane = this.reader.infoPane;
 
             // Register listeners
-            bookSelector.addEventListener('change', this.navigator.updateChapter);
+            bookSelector.addEventListener('change', function(e) {
+                book = 'Ephesians';
+                var chapters = this.book.getChapters(book);
+                this.navigator.updateChapter(chapters);
+            });
             goButton.addEventListener('click', this.reader.update);
         }
 

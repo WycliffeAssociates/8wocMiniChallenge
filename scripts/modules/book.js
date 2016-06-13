@@ -1,6 +1,7 @@
 'use strict';
 
 function Book() {
+
 	var bible;
 	var index = 0;
 	init();
@@ -73,6 +74,19 @@ function Book() {
 		console.log(parsedBookJson);
 		return parsedBookJson;
 	}
+
+	return {
+
+		//
+		getBook: function(bookName) {
+			return bible;
+		},
+
+		getChapters: function(bookName) {
+			// 
+		}
+
+	};
 
 }
 
