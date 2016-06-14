@@ -83,6 +83,13 @@ ul {
 .verse-word:hover {
     color: #286090;
 }
+.popover {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
 
 /* Info Pane */
 .info-pane h2 {

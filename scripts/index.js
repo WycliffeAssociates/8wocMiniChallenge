@@ -1,8 +1,9 @@
 var Navigator = require('./modules/navigator').Navigator,
     Reader = require('./modules/reader').Reader,
     Book = require('./modules/book').Book,
-    // Lexicon = require('./modules/lexicon').Lexicon,
     Info = require('./modules/info').Info;
+
+var utils = require('./modules/utils').utils;
 
 
 function popoverInit(selector) {
@@ -12,7 +13,6 @@ function popoverInit(selector) {
         html: true
     });
 }
-
 
 function App() {
 
@@ -26,15 +26,11 @@ function App() {
 
         book: new Book(),
 
-        // lexicon: new Lexicon(),
-
         navigator: new Navigator(),
 
         reader: new Reader(),
 
         info: new Info(),
-
-        // lexicon: new Lexicon(),
 
         init: function() {
             // Register elements
@@ -78,6 +74,13 @@ function App() {
             $(readingPane).on('click', '.verse-word', function(e) {
                 var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
                 app.info.update(info);
+            });
+
+            document.addEventListener('mouseup', function(e) {
+                utils.snapSelectionToWord();
+                var raw = window.getSelection().toString();
+                var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
+                refined && console.log(refined);
             });
 
             // Initialize bootstrap components
