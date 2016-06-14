@@ -16,7 +16,9 @@ function utils() {
                     var range = document.createRange();
                     range.setStart(sel.anchorNode, sel.anchorOffset);
                     range.setEnd(sel.focusNode, sel.focusOffset);
+                    console.log('range', range);
                     var backwards = range.collapsed;
+                    console.log('backwards', backwards);
                     range.detach();
 
                     // modify() works on the focus of the selection
