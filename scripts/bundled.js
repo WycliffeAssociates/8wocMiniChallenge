@@ -85,26 +85,25 @@ function App() {
             });
 
             readingPane.addEventListener('mouseup', function(e) {
-                document.execCommand("copy");
-            });
-
-            //solution from http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
-            readingPane.addEventListener('copy', function (e) {
                 utils.snapSelectionToWord();
 
                 var sel = window.getSelection();
-                var selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
+                if (!sel.isCollapsed) {
+                    app.info.hideInstruction();
+                    app.reader.selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
+                    app.reader.formatText(sel, bookSelector.value, chapterSelector.value);
 
-                if(sel){
-                    selectedText = app.info.updateMultiWord(sel, selectedText); 
+                    app.info.updateMultiWord(app.reader.formattedText, app.reader.formattedRef);
+
+                    document.execCommand('copy');
                 }
-                
-                // you can set clipboard data here, e.g.
-                e.clipboardData.setData('text/plain', selectedText);
-                console.log(selectedText);
+            });
+
+            readingPane.addEventListener('copy', function (e) {
+                // NOTE: http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
+                var text = app.reader.formattedText + '\n' + app.reader.formattedRef;
+                e.clipboardData.setData('text/plain', text);
                 e.preventDefault();
-
-
             });
 
             // Initialize bootstrap components
@@ -176,10 +175,11 @@ function Book() {
         string += '<li class="verse">';
         string += '<span class="verse-number">' + verse + '</span>';
         string += '<span class="verse-text">';
-        for(var i =0; i < bible[book][chapter][verse].length; i++){
-            var word = bible[book][chapter][verse][i];
+        var chapter = bible[book][chapter][verse];
+        for(var i = 0; i < chapter.length; i++){
+            var word = chapter[i];
             var definition = getDefinition(word["strongs"].replace("G", ""));
-            string += '<span class="verse-word" data-html="true" data-chapter="' + chapter + '" data-verse="' + verse + '" data-word="' + (i+1) + '"  data-strongs="' + word.strongs + '"  data-content="';
+            string += '<span class="verse-word" data-html="true" data-verse="' + verse + '" data-word="' + (i+1) + '"  data-last="' + (i === chapter.length - 1 ? 'true' : 'false') + '" data-strongs="' + word.strongs + '"  data-content="';
             string += word.strongs + '<br />' + word.morph + '<br />' + (definition.brief || '');
             string += '">' + word.greek + '</span> ';
         }
@@ -324,11 +324,6 @@ function Info() {
         },
 
         updateSingleWord: function(info) {
-            // if (!info) {
-            //     return false;
-            // }
-
-            this.hideInstruction();
             $(wordSelected).html(info.greek);
             $(wordStrongs).html(info.strongs);
             // TODO: Parse morphology. PREP -> preposigion, CONJ -> conjunction, etc.
@@ -336,70 +331,11 @@ function Info() {
             $(wordDefBrief).html(info.brief);
             $(wordDefLong).html(info.long);
             $(wordCount).html(info.count);
-
         },
 
-        updateMultiWord: function(sel, selectedText) {
-            if (!sel.isCollapsed && sel.anchorNode != sel.focusNode) {
-                var range = sel.getRangeAt(0);
-                var nodes = range.cloneContents();
-                range.detach();
-
-                var words = nodes.querySelectorAll('.verse-word');
-                words = Array.prototype.slice.call(words);
-                
-                // var index = 0;
-                // for(var i = 0; i < words.length; i++){
-                //     var word = words[i];
-                //     index += words[i].innerText.length + 1;
-                //     if( (i+1 < words.length) && (words[i+1].dataset.verse > word.dataset.verse) ){
-                //         var insertingText = ' ' + words[i+1].dataset.verse.toString() + ". ";
-                //         var part1 = selectedText.slice(0, index);
-                //         var part2 = selectedText.slice(index);
-                //         selectedText = part1 + words[i+1].dataset.verse.toString() + part2;
-                //         index += insertingText.length;
-                //     }
-                // }
-
-                selectedText = "";
-                for(var i = 0; i < words.length; i++){
-                    var word = words[i];
-                    selectedText += words[i].innerText + ' ';
-                    if( (i+1 < words.length) && (words[i+1].dataset.verse > word.dataset.verse) ){
-                        selectedText += ' ' + words[i+1].dataset.verse.toString() + ". ";
-                    }
-                }
-
-                var chapter = words[0].dataset.chapter;
-                var startVerse = words[0].dataset.verse;
-                var startWord = words[0].dataset.word;
-                var endVerse = words[words.length-1].dataset.verse;
-                var endWord = words[words.length-1].dataset.word;
-
-                if(startWord == 1){
-                    selectedText = startVerse.toString() + ". " + selectedText;
-                }
-
-                console.log("current word", words[words.length-1]);
-                var el = words[words.length-1];
-                var vs = el.dataset.verse;
-                var wd = el.dataset.word;
-                var verseRange = "Ephesians " + chapter + ':' + startVerse;
-                if(startVerse != endVerse){
-                    if(startWord > 1){
-                        verseRange += ' (word ' + startWord + ')';
-                    }
-                    verseRange += ' - ' + endVerse;
-                    verseRange += ' (word ' + endWord + ')';
-                } else {
-                    if(startWord != endWord){
-                        verseRange += ' (words ' + startWord + '-' + endWord + ')';
-                    } else {
-                        verseRange += ' (word ' + startWord + ')';
-                    }
-                }
-                return selectedText + '\n' + verseRange;
-            }
+        updateMultiWord: function(formattedText, formattedRef) {
+            // formattedText = formattedText.replace(/\d+./gi, 'ALOHA');
+            $(multiWordInfo).html(formattedText + '<br/>' + formattedRef);
         }
 
     };
@@ -475,6 +411,65 @@ function Reader() {
         hideInstruction: function() {
             $(paneContent).children().show();
             $(paneContent).find('.instruction').hide();
+        },
+
+        // Pure text based on user selection
+        selectedText: '',
+
+        // Like selectedText, but includes the verse number
+        formattedText: '',
+
+        formattedRef: '',
+
+        formatText: function(sel, bookName, chapterNumber) {
+            var range = sel.getRangeAt(0),
+                docFragment = range.cloneContents(),
+                nodes = docFragment.querySelectorAll('.verse-word'),
+                words = Array.prototype.slice.call(nodes),
+                firstWord = words[0],
+                lastWord = words[words.length - 1],
+                bookName = bookName || 'Book Name',
+                formattedText = "",
+                startVerse = firstWord.dataset.verse,
+                startWord = firstWord.dataset.word,
+                endVerse = lastWord.dataset.verse,
+                endWord = lastWord.dataset.word;
+
+            range.detach();
+
+            words.forEach(function(word, index, words) {
+                formattedText += word.innerText + ' ';
+                if ((index + 1 < words.length) && (words[index+1].dataset.verse > word.dataset.verse) ){
+                    formattedText += ' ' + words[index+1].dataset.verse.toString() + ". ";
+                }
+            });
+
+            formattedText = formattedText.trim();
+
+            // If first word selected is the beginning of the verse, add verse number in front of it.
+            if(startWord == 1){
+                formattedText = startVerse.toString() + ". " + formattedText;
+            }
+
+            // Format the reference
+            var verseRange = bookName + ' ' + chapterNumber + ':' + startVerse;
+
+            if(startVerse != endVerse){
+                if(startWord > 1){
+                    verseRange += ' (word ' + startWord + ')';
+                }
+                verseRange += ' - ' + endVerse;
+                verseRange += ' (word ' + endWord + ')';
+            } else {
+                if(startWord != endWord){
+                    verseRange += ' (words ' + startWord + '-' + endWord + ')';
+                } else {
+                    verseRange += ' (word ' + startWord + ')';
+                }
+            }
+
+            this.formattedText = formattedText;
+            this.formattedRef = verseRange;
         },
 
         update: function(chapterObject) {

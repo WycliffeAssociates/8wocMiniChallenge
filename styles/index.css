@@ -53,6 +53,7 @@ ul {
 }
 .pane-content {
     padding: 1.5rem;
+    position: relative;
 }
 
 /* Reading Pane */
