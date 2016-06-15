@@ -54,9 +54,9 @@ function Book() {
         for(var i =0; i < bible[book][chapter][verse].length; i++){
             var word = bible[book][chapter][verse][i];
             var definition = getDefinition(word["strongs"].replace("G", ""));
-            string += '<span class="verse-word" tabindex="0" role="button" data-toggle="popover" data-html="true" data-chapter="' + chapter + '" data-verse="' + verse + '" data-word="' + (i+1) + '"  data-strongs="' + word["strongs"] + '"  data-content="';
-            string += '<p>Strongs: ' + word["strongs"] + '</p><p>Morphology: ' + word["morph"] + '</p><p>' + (definition.long || '') + '</p>';
-            string += '">' + word["greek"] + '</span> ';
+            string += '<span class="verse-word" data-html="true" data-chapter="' + chapter + '" data-verse="' + verse + '" data-word="' + (i+1) + '"  data-strongs="' + word.strongs + '"  data-content="';
+            string += word.strongs + '<br />' + word.morph + '<br />' + (definition.brief || '');
+            string += '">' + word.greek + '</span> ';
         }
         string += '</span>';
         string += '</li>';
