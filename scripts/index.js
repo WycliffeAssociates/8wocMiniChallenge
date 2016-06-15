@@ -77,10 +77,10 @@ function App() {
             });
 
             readingPane.addEventListener('mouseup', function(e) {
-                console.log(e.target);
+                // console.log(e.target);
                 utils.snapSelectionToWord();
-                console.log("anchor", window.getSelection().anchorNode);
-                console.log("focus", window.getSelection().focusNode);
+                // console.log("anchor", window.getSelection().anchorNode);
+                // console.log("focus", window.getSelection().focusNode);
 
                 var raw = window.getSelection().toString();
                 var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');

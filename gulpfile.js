@@ -6,7 +6,7 @@ var gulp = require('gulp'),
 gulp.task('default', ['watch']);
 
 
-gulp.task('watch', function() {
+gulp.task('watch', ['browserify'], function() {
 	gulp.watch(['scripts/index.js', 'scripts/modules/*.js'], ['browserify']);
 });
 
