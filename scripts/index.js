@@ -1,18 +1,18 @@
 var Navigator = require('./modules/navigator').Navigator,
     Reader = require('./modules/reader').Reader,
     Book = require('./modules/book').Book,
-    // Lexicon = require('./modules/lexicon').Lexicon,
     Info = require('./modules/info').Info;
+
+var utils = require('./modules/utils').utils;
 
 
 function popoverInit(selector) {
     $(selector).popover({
-        placement: 'bottom',
+        placement: 'auto bottom',
         trigger: 'hover',
         html: true
     });
 }
-
 
 function App() {
 
@@ -26,15 +26,11 @@ function App() {
 
         book: new Book(),
 
-        // lexicon: new Lexicon(),
-
         navigator: new Navigator(),
 
         reader: new Reader(),
 
         info: new Info(),
-
-        // lexicon: new Lexicon(),
 
         init: function() {
             // Register elements
@@ -77,7 +73,36 @@ function App() {
 
             $(readingPane).on('click', '.verse-word', function(e) {
                 var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
-                app.info.update(info);
+                app.info.updateSingleWord(info);
+            });
+
+            readingPane.addEventListener('mousedown', function(e) {
+                // Reset selection
+                var sel = window.getSelection();
+                sel.collapse(readingPane, 0);
+                sel.removeAllRanges();
+            });
+
+            readingPane.addEventListener('mouseup', function(e) {
+                utils.snapSelectionToWord();
+
+                var sel = window.getSelection();
+                if (!sel.isCollapsed) {
+                    app.info.hideInstruction();
+                    app.reader.selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
+                    app.reader.formatText(sel, bookSelector.value, chapterSelector.value);
+
+                    app.info.updateMultiWord(app.reader.formattedText, app.reader.formattedRef);
+
+                    document.execCommand('copy');
+                }
+            });
+
+            readingPane.addEventListener('copy', function (e) {
+                // NOTE: http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
+                var text = app.reader.formattedText + '\n' + app.reader.formattedRef;
+                e.clipboardData.setData('text/plain', text);
+                e.preventDefault();
             });
 
             // Initialize bootstrap components

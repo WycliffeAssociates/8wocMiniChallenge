@@ -1,20 +1,19 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-<<<<<<< HEAD
 var Navigator = require('./modules/navigator').Navigator,
     Reader = require('./modules/reader').Reader,
     Book = require('./modules/book').Book,
-    // Lexicon = require('./modules/lexicon').Lexicon,
     Info = require('./modules/info').Info;
+
+var utils = require('./modules/utils').utils;
 
 
 function popoverInit(selector) {
     $(selector).popover({
-        placement: 'bottom',
+        placement: 'auto bottom',
         trigger: 'hover',
         html: true
     });
 }
-
 
 function App() {
 
@@ -28,15 +27,11 @@ function App() {
 
         book: new Book(),
 
-        // lexicon: new Lexicon(),
-
         navigator: new Navigator(),
 
         reader: new Reader(),
 
         info: new Info(),
-
-        // lexicon: new Lexicon(),
 
         init: function() {
             // Register elements
@@ -79,7 +74,36 @@ function App() {
 
             $(readingPane).on('click', '.verse-word', function(e) {
                 var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
-                app.info.update(info);
+                app.info.updateSingleWord(info);
+            });
+
+            readingPane.addEventListener('mousedown', function(e) {
+                // Reset selection
+                var sel = window.getSelection();
+                sel.collapse(readingPane, 0);
+                sel.removeAllRanges();
+            });
+
+            readingPane.addEventListener('mouseup', function(e) {
+                utils.snapSelectionToWord();
+
+                var sel = window.getSelection();
+                if (!sel.isCollapsed) {
+                    app.info.hideInstruction();
+                    app.reader.selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
+                    app.reader.formatText(sel, bookSelector.value, chapterSelector.value);
+
+                    app.info.updateMultiWord(app.reader.formattedText, app.reader.formattedRef);
+
+                    document.execCommand('copy');
+                }
+            });
+
+            readingPane.addEventListener('copy', function (e) {
+                // NOTE: http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
+                var text = app.reader.formattedText + '\n' + app.reader.formattedRef;
+                e.clipboardData.setData('text/plain', text);
+                e.preventDefault();
             });
 
             // Initialize bootstrap components
@@ -97,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-},{"./modules/book":2,"./modules/info":3,"./modules/navigator":4,"./modules/reader":5}],2:[function(require,module,exports){
+},{"./modules/book":2,"./modules/info":3,"./modules/navigator":4,"./modules/reader":5,"./modules/utils":6}],2:[function(require,module,exports){
 'use strict';
 
 function Book() {
@@ -151,12 +175,13 @@ function Book() {
         string += '<li class="verse">';
         string += '<span class="verse-number">' + verse + '</span>';
         string += '<span class="verse-text">';
-        for(var i =0; i < bible[book][chapter][verse].length; i++){
-            var word = bible[book][chapter][verse][i];
+        var chapter = bible[book][chapter][verse];
+        for(var i = 0; i < chapter.length; i++){
+            var word = chapter[i];
             var definition = getDefinition(word["strongs"].replace("G", ""));
-            string += '<span class="verse-word" tabindex="0" role="button" data-toggle="popover" data-html="true" data-strongs="' + word["strongs"] + '"  data-content="';
-            string += '<p>Strongs: ' + word["strongs"] + '</p><p>Morphology: ' + word["morph"] + '</p><p>' + (definition.long || '') + '</p>';
-            string += '">' + word["greek"] + '</span> ';
+            string += '<span class="verse-word" data-html="true" data-verse="' + verse + '" data-word="' + (i+1) + '"  data-last="' + (i === chapter.length - 1 ? 'true' : 'false') + '" data-strongs="' + word.strongs + '"  data-content="';
+            string += word.strongs + '<br />' + word.morph + '<br />' + (definition.brief || '');
+            string += '">' + word.greek + '</span> ';
         }
         string += '</span>';
         string += '</li>';
@@ -198,7 +223,7 @@ function Book() {
         for(var i = 1; i < Object.keys(parsedBookJson["Ephesians"]).length + 1; i++){
                 //console.log("hi " + Object.keys(parsedBookJson["Ephesians"][(i +1).toString()]).length);
             for(var j = 1; j < Object.keys(parsedBookJson["Ephesians"][i.toString()]).length + 1; j++){
-                var re = new RegExp(/([α-ωΑ-Ω]+) (G[0-9]+)[ G[0-9]+]* ([A-Z]+[0-9]*[-[0-9]*[A-Z]*[0-9]*]*)/, "g");
+                var re = new RegExp(/([α-ωΑ-Ω]+) (G[0-9]+)( G[0-9]+)* ([A-Z]+[0-9]*[-[0-9]*[A-Z]*[0-9]*]*)/, "g");
                 var verse = parsedBookJson["Ephesians"][i.toString()][j.toString()].replace(/ \{.*\} /,"").replace(/ \[/, "").replace(/\]/,"");//.split(" ");
                 var results = [];
                 var m = [];
@@ -211,7 +236,7 @@ function Book() {
                 parsedBookJson["Ephesians"][i.toString()][j.toString()] = [];
                 for(var k = 0; k < results.length; k++){
                     //strongs is different because of a (possibly javascript itself?) bug
-                    var temp = {"greek":results[k][1], "strongs":results[k][0].split(" ")[1], "morph":results[k][3]};
+                    var temp = {"greek":results[k][1], "strongs":results[k][2], "morph":results[k][4]};
                     // console.log(verse);
                     // console.log("strongs", results[k][0].split(" ")[1]);
                     // console.log("results", results[0]);
@@ -270,23 +295,24 @@ exports.Book = Book;
 
 function Info() {
 
-	var infoPane = document.querySelector('.info-pane'),
-		paneContent = infoPane.querySelector('.pane-content'),
-		wordSelected = infoPane.querySelector('.word-selected'),
-		wordStrongs = infoPane.querySelector('.word-strongs'),
-		wordMorph = infoPane.querySelector('.word-morph'),
-		wordDefBrief = infoPane.querySelector('.word-def-brief'),
-		wordDefLong = infoPane.querySelector('.word-def-long'),
-		wordCount = infoPane.querySelector('.word-count');
+    var infoPane = document.querySelector('.info-pane'),
+        paneContent = infoPane.querySelector('.pane-content'),
+        singleWordInfo = infoPane.querySelector('.single-word-info'),
+        wordSelected = singleWordInfo.querySelector('.word-selected'),
+        wordStrongs = singleWordInfo.querySelector('.word-strongs'),
+        wordMorph = singleWordInfo.querySelector('.word-morph'),
+        wordDefBrief = singleWordInfo.querySelector('.word-def-brief'),
+        wordDefLong = singleWordInfo.querySelector('.word-def-long'),
+        wordCount = singleWordInfo.querySelector('.word-count'),
+        multiWordInfo = infoPane.querySelector('.multi-word-info');
 
     return {
 
-    	infoPane:(function() {
-    		return infoPane;
-    	})(),
+        infoPane:(function() {
+            return infoPane;
+        })(),
 
         showInstruction: function() {
-        	console.log('showing');
             var el = '<p class="instruction">Click on a greek word to display its info</p>';
             $(paneContent).children().hide();
             $(paneContent).append(el);
@@ -297,23 +323,20 @@ function Info() {
             $(paneContent).find('.instruction').hide();
         },
 
-    	update: function(info) {
-    		if (!info) {
-    			return false;
-    		}
+        updateSingleWord: function(info) {
+            $(wordSelected).html(info.greek);
+            $(wordStrongs).html(info.strongs);
+            // TODO: Parse morphology. PREP -> preposigion, CONJ -> conjunction, etc.
+            $(wordMorph).html(info.morphology);
+            $(wordDefBrief).html(info.brief);
+            $(wordDefLong).html(info.long);
+            $(wordCount).html(info.count);
+        },
 
-    		console.log(info);
-
-    		this.hideInstruction();
-    		$(wordSelected).html(info.greek);
-    		$(wordStrongs).html(info.strongs);
-    		// TODO: Parse morphology. PREP -> preposigion, CONJ -> conjunction, etc.
-    		$(wordMorph).html(info.morphology);
-    		$(wordDefBrief).html(info.brief);
-    		$(wordDefLong).html(info.long);
-    		$(wordCount).html(info.count);
-
-    	}
+        updateMultiWord: function(formattedText, formattedRef) {
+            // formattedText = formattedText.replace(/\d+./gi, 'ALOHA');
+            $(multiWordInfo).html(formattedText + '<br/>' + formattedRef);
+        }
 
     };
 
@@ -357,60 +380,10 @@ function Navigator() {
             }
         },
 
-=======
-var Test = require('./modules/test').Test;
-
-window.App = {
-
-    Test: Test('curry'),
-
-    el: {
-        bookSelector: undefined,
-        chapterSelector: undefined,
-        readingPane: undefined,
-        infoPane: undefined,
-    },
-
-    Book: Material(),
-
-    lexicon: Lexicon(),
-
-    init: function() {
-        // Register elements
-        this.el.bookSelector = document.querySelector('#book-selector');
-        this.el.chapterSelector = document.querySelector('#chapter-selector');
-        this.el.readingPane = document.querySelector('.reading-pane');
-        this.el.infoPane = document.querySelector('.info-pane');
-        this.el.content = document.querySelector('.content');
-
-        // Register listeners
-
-    }
-
-};
-
-document.addEventListener('DOMContentLoaded', function() {
-
-    App.init();
-
-});
-
-},{"./modules/test":2}],2:[function(require,module,exports){
-'use strict';
-
-function Test() {
-
-    return {
-
-        a: "hello",
-
-        b: "sup",
->>>>>>> 898552aa467b5ed7fa2f0405366a3cab3827f03b
     };
 
 }
 
-<<<<<<< HEAD
 exports.Navigator = Navigator;
 },{}],5:[function(require,module,exports){
 'use strict';
@@ -440,6 +413,65 @@ function Reader() {
             $(paneContent).find('.instruction').hide();
         },
 
+        // Pure text based on user selection
+        selectedText: '',
+
+        // Like selectedText, but includes the verse number
+        formattedText: '',
+
+        formattedRef: '',
+
+        formatText: function(sel, bookName, chapterNumber) {
+            var range = sel.getRangeAt(0),
+                docFragment = range.cloneContents(),
+                nodes = docFragment.querySelectorAll('.verse-word'),
+                words = Array.prototype.slice.call(nodes),
+                firstWord = words[0],
+                lastWord = words[words.length - 1],
+                bookName = bookName || 'Book Name',
+                formattedText = "",
+                startVerse = firstWord.dataset.verse,
+                startWord = firstWord.dataset.word,
+                endVerse = lastWord.dataset.verse,
+                endWord = lastWord.dataset.word;
+
+            range.detach();
+
+            words.forEach(function(word, index, words) {
+                formattedText += word.innerText + ' ';
+                if ((index + 1 < words.length) && (words[index+1].dataset.verse > word.dataset.verse) ){
+                    formattedText += ' ' + words[index+1].dataset.verse.toString() + ". ";
+                }
+            });
+
+            formattedText = formattedText.trim();
+
+            // If first word selected is the beginning of the verse, add verse number in front of it.
+            if(startWord == 1){
+                formattedText = startVerse.toString() + ". " + formattedText;
+            }
+
+            // Format the reference
+            var verseRange = bookName + ' ' + chapterNumber + ':' + startVerse;
+
+            if(startVerse != endVerse){
+                if(startWord > 1){
+                    verseRange += ' (word ' + startWord + ')';
+                }
+                verseRange += ' - ' + endVerse;
+                verseRange += ' (word ' + endWord + ')';
+            } else {
+                if(startWord != endWord){
+                    verseRange += ' (words ' + startWord + '-' + endWord + ')';
+                } else {
+                    verseRange += ' (word ' + startWord + ')';
+                }
+            }
+
+            this.formattedText = formattedText;
+            this.formattedRef = verseRange;
+        },
+
         update: function(chapterObject) {
             $(title).html(chapterObject.title);
             $(chapter).html(chapterObject.chapter);
@@ -452,8 +484,57 @@ function Reader() {
 }
 
 exports.Reader = Reader;
-=======
-exports.Test = Test;
+},{}],6:[function(require,module,exports){
+'use strict';
 
->>>>>>> 898552aa467b5ed7fa2f0405366a3cab3827f03b
+function utils() {
+
+    return {
+        snapSelectionToWord: function() {
+            var sel;
+
+            // Check for existence of window.getSelection() and that it has a
+            // modify() method. IE 9 has both selection APIs but no modify() method.
+            if (window.getSelection && (sel = window.getSelection()).modify) {
+                sel = window.getSelection();
+                if (!sel.isCollapsed) {
+
+                    // Detect if selection is backwards
+                    var range = document.createRange();
+                    range.setStart(sel.anchorNode, sel.anchorOffset);
+                    range.setEnd(sel.focusNode, sel.focusOffset);
+                    var backwards = range.collapsed;
+                    range.detach();
+
+                    // modify() works on the focus of the selection
+                    var endNode = sel.focusNode, endOffset = sel.focusOffset;
+                    sel.collapse(sel.anchorNode, sel.anchorOffset);
+                    
+                    var direction = backwards ? ['backward', 'forward'] : ['forward', 'backward'];
+
+                    sel.modify("move", direction[0], "character");
+                    sel.modify("move", direction[1], "word");
+                    sel.extend(endNode, endOffset);
+                    sel.modify("extend", direction[1], "character");
+                    sel.modify("extend", direction[0], "word");
+                }
+            }
+            else if ( (sel = document.selection) && sel.type != "Control") {
+                var textRange = sel.createRange();
+                if (textRange.text) {
+                    textRange.expand("word");
+                    // Move the end back to not include the word's trailing space(s),
+                    // if necessary
+                    while (/\s$/.test(textRange.text)) {
+                        textRange.moveEnd("character", -2);
+                    }
+                    textRange.select();
+                }
+            }
+        }
+    };
+
+}
+
+exports.utils = utils();
 },{}]},{},[1]);

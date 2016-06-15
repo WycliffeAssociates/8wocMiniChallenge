@@ -50,6 +50,7 @@ ul {
 }
 .pane-content {
     padding: 1.5rem;
+    position: relative;
 }
 
 /* Reading Pane */
@@ -78,6 +79,13 @@ ul {
 }
 .verse-word:hover {
     color: #286090;
+}
+.popover {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 /* Info Pane */
