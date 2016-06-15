@@ -52,15 +52,15 @@ function Info() {
                     docFragment = range.cloneContents(),
                     nodes = docFragment.querySelectorAll('.verse-word'),
                     words = Array.prototype.slice.call(nodes),
-                    verses = [],
-                    words = [],
+                    firstWord = words[0],
+                    lastWord = words[words.length - 1],
                     bookName = bookName || 'Book Name';
 
                 range.detach();
 
-                words.forEach(function(word) {
-                    console.log(word.dataset.verse);
-                });
+                console.log('first', firstWord);
+                console.log('last', $(lastWord).siblings(':last').get(0));
+
             }
         }
 

@@ -95,9 +95,8 @@ function App() {
                 document.execCommand('copy');
             });
 
-            //solution from http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
             readingPane.addEventListener('copy', function (e) {
-                // you can set clipboard data here, e.g.
+                // NOTE: http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
                 e.clipboardData.setData('text/plain', app.reader.selectedText);
                 e.preventDefault();
             });
@@ -171,10 +170,11 @@ function Book() {
         string += '<li class="verse">';
         string += '<span class="verse-number">' + verse + '</span>';
         string += '<span class="verse-text">';
-        for(var i =0; i < bible[book][chapter][verse].length; i++){
-            var word = bible[book][chapter][verse][i];
+        var chapter = bible[book][chapter][verse];
+        for(var i = 0; i < chapter.length; i++){
+            var word = chapter[i];
             var definition = getDefinition(word["strongs"].replace("G", ""));
-            string += '<span class="verse-word" data-html="true" data-chapter="' + chapter + '" data-verse="' + verse + '" data-word="' + (i+1) + '"  data-strongs="' + word.strongs + '"  data-content="';
+            string += '<span class="verse-word" data-html="true" data-verse="' + verse + '" data-word="' + (i+1) + '"  data-last="' + (i === chapter.length - 1 ? 'true' : 'false') + '" data-strongs="' + word.strongs + '"  data-content="';
             string += word.strongs + '<br />' + word.morph + '<br />' + (definition.brief || '');
             string += '">' + word.greek + '</span> ';
         }
@@ -340,15 +340,15 @@ function Info() {
                     docFragment = range.cloneContents(),
                     nodes = docFragment.querySelectorAll('.verse-word'),
                     words = Array.prototype.slice.call(nodes),
-                    verses = [],
-                    words = [],
+                    firstWord = words[0],
+                    lastWord = words[words.length - 1],
                     bookName = bookName || 'Book Name';
 
                 range.detach();
 
-                words.forEach(function(word) {
-                    console.log(word.dataset.verse);
-                });
+                console.log('first', firstWord);
+                console.log('last', $(lastWord).siblings(':last').get(0));
+
             }
         }
 

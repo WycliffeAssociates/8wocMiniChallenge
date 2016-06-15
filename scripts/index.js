@@ -94,9 +94,8 @@ function App() {
                 document.execCommand('copy');
             });
 
-            //solution from http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
             readingPane.addEventListener('copy', function (e) {
-                // you can set clipboard data here, e.g.
+                // NOTE: http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
                 e.clipboardData.setData('text/plain', app.reader.selectedText);
                 e.preventDefault();
             });
