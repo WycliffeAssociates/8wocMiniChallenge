@@ -77,6 +77,14 @@ function App() {
             });
 
             readingPane.addEventListener('mouseup', function(e) {
+                document.execCommand("copy");
+            });
+
+            //solution from http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
+            document.addEventListener('copy', function (ev) {
+                console.log('copy event');
+
+                //modify selection to grab full words
                 // console.log(e.target);
                 utils.snapSelectionToWord();
                 // console.log("anchor", window.getSelection().anchorNode);
@@ -85,6 +93,11 @@ function App() {
                 var raw = window.getSelection().toString();
                 var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
                 // refined && console.log(refined);
+
+                // you can set clipboard data here, e.g.
+                ev.clipboardData.setData('text/plain', refined);
+                // you need to prevent default behaviour here, otherwise browser will overwrite your content with currently selected 
+                ev.preventDefault();
             });
 
             // Initialize bootstrap components
