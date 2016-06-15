@@ -84,23 +84,21 @@ function App() {
             });
 
             readingPane.addEventListener('mouseup', function(e) {
-                readingPane.execCommand("copy");
+                utils.snapSelectionToWord();
+
+                var sel = window.getSelection();
+                app.reader.selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
+
+                sel && app.info.updateMultiWord(sel, app.reader.selectedText, bookSelector.value);
+
+                document.execCommand('copy');
             });
 
             //solution from http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
             readingPane.addEventListener('copy', function (e) {
-                utils.snapSelectionToWord();
-
-                var sel = window.getSelection();
-                var selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
-
-                sel && app.info.updateMultiWord(sel, selectedText);
-                
                 // you can set clipboard data here, e.g.
-                e.clipboardData.setData('text/plain', selectedText);
+                e.clipboardData.setData('text/plain', app.reader.selectedText);
                 e.preventDefault();
-
-
             });
 
             // Initialize bootstrap components

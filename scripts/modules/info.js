@@ -46,14 +46,18 @@ function Info() {
 
         },
 
-        updateMultiWord: function(sel, selectedText) {
+        updateMultiWord: function(sel, selectedText, bookName) {
             if (!sel.isCollapsed && sel.anchorNode != sel.focusNode) {
-                var range = sel.getRangeAt(0);
-                var nodes = range.cloneContents();
+                var range = sel.getRangeAt(0),
+                    docFragment = range.cloneContents(),
+                    nodes = docFragment.querySelectorAll('.verse-word'),
+                    words = Array.prototype.slice.call(nodes),
+                    verses = [],
+                    words = [],
+                    bookName = bookName || 'Book Name';
+
                 range.detach();
 
-                var words = nodes.querySelectorAll('.verse-word');
-                words = Array.prototype.slice.call(words);
                 words.forEach(function(word) {
                     console.log(word.dataset.verse);
                 });

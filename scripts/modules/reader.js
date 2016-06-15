@@ -25,6 +25,8 @@ function Reader() {
             $(paneContent).find('.instruction').hide();
         },
 
+        selectedText: '',
+
         update: function(chapterObject) {
             $(title).html(chapterObject.title);
             $(chapter).html(chapterObject.chapter);
