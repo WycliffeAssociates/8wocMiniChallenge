@@ -8,7 +8,7 @@ var utils = require('./modules/utils').utils;
 
 function popoverInit(selector) {
     $(selector).popover({
-        placement: 'bottom',
+        placement: 'auto bottom',
         trigger: 'hover',
         html: true
     });
