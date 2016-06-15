@@ -75,10 +75,12 @@ function App() {
 
             $(readingPane).on('click', '.verse-word', function(e) {
                 var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
+                console.log('click verse-word', e.target, info);
                 app.info.updateSingleWord(info);
             });
 
             readingPane.addEventListener('mousedown', function(e) {
+                console.log('mousedown');
                 // Reset selection
                 var sel = window.getSelection();
                 sel.collapse(readingPane, 0);
@@ -86,11 +88,11 @@ function App() {
             });
 
             readingPane.addEventListener('mouseup', function(e) {
+                console.log('mouseup');
                 utils.snapSelectionToWord();
 
                 var sel = window.getSelection();
                 if (!sel.isCollapsed) {
-                    app.info.hideInstruction();
                     app.reader.selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
                     app.reader.formatText(sel, bookSelector.value, chapterSelector.value);
 

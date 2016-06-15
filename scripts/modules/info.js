@@ -31,6 +31,8 @@ function Info() {
         },
 
         updateSingleWord: function(info) {
+            this.hideInstruction();
+
             $(wordSelected).html(info.greek);
             $(wordStrongs).html(info.strongs);
             // TODO: Parse morphology. PREP -> preposigion, CONJ -> conjunction, etc.
@@ -41,6 +43,7 @@ function Info() {
         },
 
         updateMultiWord: function(formattedText, formattedRef) {
+            this.hideInstruction();
             // formattedText = formattedText.replace(/\d+./gi, 'ALOHA');
             $(multiWordInfo).html(formattedText + '<br/>' + formattedRef);
         }

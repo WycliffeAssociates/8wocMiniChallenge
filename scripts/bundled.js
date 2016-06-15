@@ -1260,10 +1260,12 @@ function App() {
 
             $(readingPane).on('click', '.verse-word', function(e) {
                 var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
+                console.log('click verse-word', e.target, info);
                 app.info.updateSingleWord(info);
             });
 
             readingPane.addEventListener('mousedown', function(e) {
+                console.log('mousedown');
                 // Reset selection
                 var sel = window.getSelection();
                 sel.collapse(readingPane, 0);
@@ -1271,11 +1273,11 @@ function App() {
             });
 
             readingPane.addEventListener('mouseup', function(e) {
+                console.log('mouseup');
                 utils.snapSelectionToWord();
 
                 var sel = window.getSelection();
                 if (!sel.isCollapsed) {
-                    app.info.hideInstruction();
                     app.reader.selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
                     app.reader.formatText(sel, bookSelector.value, chapterSelector.value);
 
@@ -1488,6 +1490,8 @@ function Info() {
         },
 
         updateSingleWord: function(info) {
+            this.hideInstruction();
+
             $(wordSelected).html(info.greek);
             $(wordStrongs).html(info.strongs);
             // TODO: Parse morphology. PREP -> preposigion, CONJ -> conjunction, etc.
@@ -1498,6 +1502,7 @@ function Info() {
         },
 
         updateMultiWord: function(formattedText, formattedRef) {
+            this.hideInstruction();
             // formattedText = formattedText.replace(/\d+./gi, 'ALOHA');
             $(multiWordInfo).html(formattedText + '<br/>' + formattedRef);
         }
