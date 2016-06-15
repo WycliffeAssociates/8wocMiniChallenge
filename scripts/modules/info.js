@@ -4,12 +4,14 @@ function Info() {
 
     var infoPane = document.querySelector('.info-pane'),
         paneContent = infoPane.querySelector('.pane-content'),
-        wordSelected = infoPane.querySelector('.word-selected'),
-        wordStrongs = infoPane.querySelector('.word-strongs'),
-        wordMorph = infoPane.querySelector('.word-morph'),
-        wordDefBrief = infoPane.querySelector('.word-def-brief'),
-        wordDefLong = infoPane.querySelector('.word-def-long'),
-        wordCount = infoPane.querySelector('.word-count');
+        singleWordInfo = infoPane.querySelector('.single-word-info'),
+        wordSelected = singleWordInfo.querySelector('.word-selected'),
+        wordStrongs = singleWordInfo.querySelector('.word-strongs'),
+        wordMorph = singleWordInfo.querySelector('.word-morph'),
+        wordDefBrief = singleWordInfo.querySelector('.word-def-brief'),
+        wordDefLong = singleWordInfo.querySelector('.word-def-long'),
+        wordCount = singleWordInfo.querySelector('.word-count'),
+        multiWordInfo = infoPane.querySelector('.multi-word-info');
 
     return {
 
@@ -28,10 +30,10 @@ function Info() {
             $(paneContent).find('.instruction').hide();
         },
 
-        update: function(info) {
-            if (!info) {
-                return false;
-            }
+        updateSingleWord: function(info) {
+            // if (!info) {
+            //     return false;
+            // }
 
             this.hideInstruction();
             $(wordSelected).html(info.greek);
@@ -42,6 +44,20 @@ function Info() {
             $(wordDefLong).html(info.long);
             $(wordCount).html(info.count);
 
+        },
+
+        updateMultiWord: function(sel) {
+            if (!sel.isCollapsed && sel.anchorNode != sel.focusNode) {
+                var range = sel.getRangeAt(0);
+                var nodes = range.cloneContents();
+                range.detach();
+
+                var words = nodes.querySelectorAll('.verse-word');
+                words = Array.prototype.slice.call(words);
+                words.forEach(function(word) {
+                    console.log(word.dataset.verse);
+                });
+            }
         }
 
     };

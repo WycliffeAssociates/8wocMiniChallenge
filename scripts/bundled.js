@@ -74,7 +74,14 @@ function App() {
 
             $(readingPane).on('click', '.verse-word', function(e) {
                 var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
-                app.info.update(info);
+                app.info.updateSingleWord(info);
+            });
+
+            readingPane.addEventListener('mousedown', function(e) {
+                // Reset selection
+                var sel = window.getSelection();
+                sel.collapse(readingPane, 0);
+                sel.removeAllRanges();
             });
 
             readingPane.addEventListener('mouseup', function(e) {
@@ -83,9 +90,12 @@ function App() {
                 // console.log("anchor", window.getSelection().anchorNode);
                 // console.log("focus", window.getSelection().focusNode);
 
-                var raw = window.getSelection().toString();
-                var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
+                var sel = window.getSelection();
+                var selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
                 // refined && console.log(refined);
+
+                app.info.updateMultiWord(sel);
+
             });
 
             // Initialize bootstrap components
@@ -278,12 +288,14 @@ function Info() {
 
     var infoPane = document.querySelector('.info-pane'),
         paneContent = infoPane.querySelector('.pane-content'),
-        wordSelected = infoPane.querySelector('.word-selected'),
-        wordStrongs = infoPane.querySelector('.word-strongs'),
-        wordMorph = infoPane.querySelector('.word-morph'),
-        wordDefBrief = infoPane.querySelector('.word-def-brief'),
-        wordDefLong = infoPane.querySelector('.word-def-long'),
-        wordCount = infoPane.querySelector('.word-count');
+        singleWordInfo = infoPane.querySelector('.single-word-info'),
+        wordSelected = singleWordInfo.querySelector('.word-selected'),
+        wordStrongs = singleWordInfo.querySelector('.word-strongs'),
+        wordMorph = singleWordInfo.querySelector('.word-morph'),
+        wordDefBrief = singleWordInfo.querySelector('.word-def-brief'),
+        wordDefLong = singleWordInfo.querySelector('.word-def-long'),
+        wordCount = singleWordInfo.querySelector('.word-count'),
+        multiWordInfo = infoPane.querySelector('.multi-word-info');
 
     return {
 
@@ -302,10 +314,10 @@ function Info() {
             $(paneContent).find('.instruction').hide();
         },
 
-        update: function(info) {
-            if (!info) {
-                return false;
-            }
+        updateSingleWord: function(info) {
+            // if (!info) {
+            //     return false;
+            // }
 
             this.hideInstruction();
             $(wordSelected).html(info.greek);
@@ -316,6 +328,20 @@ function Info() {
             $(wordDefLong).html(info.long);
             $(wordCount).html(info.count);
 
+        },
+
+        updateMultiWord: function(sel) {
+            if (!sel.isCollapsed && sel.anchorNode != sel.focusNode) {
+                var range = sel.getRangeAt(0);
+                var nodes = range.cloneContents();
+                range.detach();
+
+                var words = nodes.querySelectorAll('.verse-word');
+                words = Array.prototype.slice.call(words);
+                words.forEach(function(word) {
+                    console.log(word.dataset.verse);
+                });
+            }
         }
 
     };
@@ -411,8 +437,6 @@ exports.Reader = Reader;
 function utils() {
 
     return {
-        // TODO: Buggy. Try selecting a paragraph and then click somewhere in the middle of the selection.
-        //       It adds another word instead of clearing previous selection.
         snapSelectionToWord: function() {
             var sel;
 

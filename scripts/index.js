@@ -73,7 +73,14 @@ function App() {
 
             $(readingPane).on('click', '.verse-word', function(e) {
                 var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
-                app.info.update(info);
+                app.info.updateSingleWord(info);
+            });
+
+            readingPane.addEventListener('mousedown', function(e) {
+                // Reset selection
+                var sel = window.getSelection();
+                sel.collapse(readingPane, 0);
+                sel.removeAllRanges();
             });
 
             readingPane.addEventListener('mouseup', function(e) {
@@ -82,9 +89,12 @@ function App() {
                 // console.log("anchor", window.getSelection().anchorNode);
                 // console.log("focus", window.getSelection().focusNode);
 
-                var raw = window.getSelection().toString();
-                var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
+                var sel = window.getSelection();
+                var selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
                 // refined && console.log(refined);
+
+                app.info.updateMultiWord(sel);
+
             });
 
             // Initialize bootstrap components
