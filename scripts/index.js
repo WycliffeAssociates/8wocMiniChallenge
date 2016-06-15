@@ -76,11 +76,12 @@ function App() {
                 app.info.update(info);
             });
 
-            document.addEventListener('mouseup', function(e) {
+            readingPane.addEventListener('mouseup', function(e) {
+                console.log(e.target);
                 utils.snapSelectionToWord();
                 var raw = window.getSelection().toString();
                 var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
-                refined && console.log(refined);
+                // refined && console.log(refined);
             });
 
             // Initialize bootstrap components

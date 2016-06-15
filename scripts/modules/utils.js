@@ -16,21 +16,13 @@ function utils() {
                     var range = document.createRange();
                     range.setStart(sel.anchorNode, sel.anchorOffset);
                     range.setEnd(sel.focusNode, sel.focusOffset);
-                    console.log('range', range);
                     var backwards = range.collapsed;
-                    console.log('backwards', backwards);
                     range.detach();
 
                     // modify() works on the focus of the selection
                     var endNode = sel.focusNode, endOffset = sel.focusOffset;
                     sel.collapse(sel.anchorNode, sel.anchorOffset);
                     
-                    // var direction = [];
-                    // if (backwards) {
-                    //     direction = ['backward', 'forward'];
-                    // } else {
-                    //     direction = ['forward', 'backward'];
-                    // }
                     var direction = backwards ? ['backward', 'forward'] : ['forward', 'backward'];
 
                     sel.modify("move", direction[0], "character");
@@ -47,7 +39,7 @@ function utils() {
                     // Move the end back to not include the word's trailing space(s),
                     // if necessary
                     while (/\s$/.test(textRange.text)) {
-                        textRange.moveEnd("character", -1);
+                        textRange.moveEnd("character", -2);
                     }
                     textRange.select();
                 }

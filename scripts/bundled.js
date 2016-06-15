@@ -77,11 +77,12 @@ function App() {
                 app.info.update(info);
             });
 
-            document.addEventListener('mouseup', function(e) {
+            readingPane.addEventListener('mouseup', function(e) {
+                console.log(e.target);
                 utils.snapSelectionToWord();
                 var raw = window.getSelection().toString();
                 var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
-                refined && console.log(refined);
+                // refined && console.log(refined);
             });
 
             // Initialize bootstrap components
@@ -272,23 +273,22 @@ exports.Book = Book;
 
 function Info() {
 
-	var infoPane = document.querySelector('.info-pane'),
-		paneContent = infoPane.querySelector('.pane-content'),
-		wordSelected = infoPane.querySelector('.word-selected'),
-		wordStrongs = infoPane.querySelector('.word-strongs'),
-		wordMorph = infoPane.querySelector('.word-morph'),
-		wordDefBrief = infoPane.querySelector('.word-def-brief'),
-		wordDefLong = infoPane.querySelector('.word-def-long'),
-		wordCount = infoPane.querySelector('.word-count');
+    var infoPane = document.querySelector('.info-pane'),
+        paneContent = infoPane.querySelector('.pane-content'),
+        wordSelected = infoPane.querySelector('.word-selected'),
+        wordStrongs = infoPane.querySelector('.word-strongs'),
+        wordMorph = infoPane.querySelector('.word-morph'),
+        wordDefBrief = infoPane.querySelector('.word-def-brief'),
+        wordDefLong = infoPane.querySelector('.word-def-long'),
+        wordCount = infoPane.querySelector('.word-count');
 
     return {
 
-    	infoPane:(function() {
-    		return infoPane;
-    	})(),
+        infoPane:(function() {
+            return infoPane;
+        })(),
 
         showInstruction: function() {
-        	console.log('showing');
             var el = '<p class="instruction">Click on a greek word to display its info</p>';
             $(paneContent).children().hide();
             $(paneContent).append(el);
@@ -299,23 +299,21 @@ function Info() {
             $(paneContent).find('.instruction').hide();
         },
 
-    	update: function(info) {
-    		if (!info) {
-    			return false;
-    		}
+        update: function(info) {
+            if (!info) {
+                return false;
+            }
 
-    		console.log(info);
+            this.hideInstruction();
+            $(wordSelected).html(info.greek);
+            $(wordStrongs).html(info.strongs);
+            // TODO: Parse morphology. PREP -> preposigion, CONJ -> conjunction, etc.
+            $(wordMorph).html(info.morphology);
+            $(wordDefBrief).html(info.brief);
+            $(wordDefLong).html(info.long);
+            $(wordCount).html(info.count);
 
-    		this.hideInstruction();
-    		$(wordSelected).html(info.greek);
-    		$(wordStrongs).html(info.strongs);
-    		// TODO: Parse morphology. PREP -> preposigion, CONJ -> conjunction, etc.
-    		$(wordMorph).html(info.morphology);
-    		$(wordDefBrief).html(info.brief);
-    		$(wordDefLong).html(info.long);
-    		$(wordCount).html(info.count);
-
-    	}
+        }
 
     };
 
@@ -430,12 +428,6 @@ function utils() {
                     var endNode = sel.focusNode, endOffset = sel.focusOffset;
                     sel.collapse(sel.anchorNode, sel.anchorOffset);
                     
-                    // var direction = [];
-                    // if (backwards) {
-                    //     direction = ['backward', 'forward'];
-                    // } else {
-                    //     direction = ['forward', 'backward'];
-                    // }
                     var direction = backwards ? ['backward', 'forward'] : ['forward', 'backward'];
 
                     sel.modify("move", direction[0], "character");
@@ -452,7 +444,7 @@ function utils() {
                     // Move the end back to not include the word's trailing space(s),
                     // if necessary
                     while (/\s$/.test(textRange.text)) {
-                        textRange.moveEnd("character", -1);
+                        textRange.moveEnd("character", -2);
                     }
                     textRange.select();
                 }
