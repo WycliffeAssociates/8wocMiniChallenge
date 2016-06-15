@@ -98,7 +98,7 @@ function Book() {
         for(var i = 1; i < Object.keys(parsedBookJson["Ephesians"]).length + 1; i++){
                 //console.log("hi " + Object.keys(parsedBookJson["Ephesians"][(i +1).toString()]).length);
             for(var j = 1; j < Object.keys(parsedBookJson["Ephesians"][i.toString()]).length + 1; j++){
-                var re = new RegExp(/([α-ωΑ-Ω]+) (G[0-9]+)[ G[0-9]+]* ([A-Z]+[0-9]*[-[0-9]*[A-Z]*[0-9]*]*)/, "g");
+                var re = new RegExp(/([α-ωΑ-Ω]+) (G[0-9]+)( G[0-9]+)* ([A-Z]+[0-9]*[-[0-9]*[A-Z]*[0-9]*]*)/, "g");
                 var verse = parsedBookJson["Ephesians"][i.toString()][j.toString()].replace(/ \{.*\} /,"").replace(/ \[/, "").replace(/\]/,"");//.split(" ");
                 var results = [];
                 var m = [];
@@ -111,7 +111,7 @@ function Book() {
                 parsedBookJson["Ephesians"][i.toString()][j.toString()] = [];
                 for(var k = 0; k < results.length; k++){
                     //strongs is different because of a (possibly javascript itself?) bug
-                    var temp = {"greek":results[k][1], "strongs":results[k][0].split(" ")[1], "morph":results[k][3]};
+                    var temp = {"greek":results[k][1], "strongs":results[k][2], "morph":results[k][4]};
                     // console.log(verse);
                     // console.log("strongs", results[k][0].split(" ")[1]);
                     // console.log("results", results[0]);
