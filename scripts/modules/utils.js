@@ -3,8 +3,6 @@
 function utils() {
 
     return {
-        // TODO: Buggy. Try selecting a paragraph and then click somewhere in the middle of the selection.
-        //       It adds another word instead of clearing previous selection.
         snapSelectionToWord: function() {
             var sel;
 

@@ -74,31 +74,34 @@ function App() {
 
             $(readingPane).on('click', '.verse-word', function(e) {
                 var info = app.book.getInfo(e.target.dataset.strongs.replace("G", ""));
-                app.info.update(info);
+                app.info.updateSingleWord(info);
+            });
+
+            readingPane.addEventListener('mousedown', function(e) {
+                // Reset selection
+                var sel = window.getSelection();
+                sel.collapse(readingPane, 0);
+                sel.removeAllRanges();
             });
 
             readingPane.addEventListener('mouseup', function(e) {
-                document.execCommand("copy");
+                readingPane.execCommand("copy");
             });
 
             //solution from http://stackoverflow.com/questions/9658282/javascript-cut-copy-paste-to-clipboard-how-did-google-solve-it
-            document.addEventListener('copy', function (ev) {
-                console.log('copy event');
-
-                //modify selection to grab full words
-                // console.log(e.target);
+            readingPane.addEventListener('copy', function (e) {
                 utils.snapSelectionToWord();
-                // console.log("anchor", window.getSelection().anchorNode);
-                // console.log("focus", window.getSelection().focusNode);
 
-                var raw = window.getSelection().toString();
-                var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
-                // refined && console.log(refined);
+                var sel = window.getSelection();
+                var selectedText = sel.toString().replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
 
+                sel && app.info.updateMultiWord(sel, selectedText);
+                
                 // you can set clipboard data here, e.g.
-                ev.clipboardData.setData('text/plain', refined);
-                // you need to prevent default behaviour here, otherwise browser will overwrite your content with currently selected 
-                ev.preventDefault();
+                e.clipboardData.setData('text/plain', selectedText);
+                e.preventDefault();
+
+
             });
 
             // Initialize bootstrap components
@@ -291,12 +294,14 @@ function Info() {
 
     var infoPane = document.querySelector('.info-pane'),
         paneContent = infoPane.querySelector('.pane-content'),
-        wordSelected = infoPane.querySelector('.word-selected'),
-        wordStrongs = infoPane.querySelector('.word-strongs'),
-        wordMorph = infoPane.querySelector('.word-morph'),
-        wordDefBrief = infoPane.querySelector('.word-def-brief'),
-        wordDefLong = infoPane.querySelector('.word-def-long'),
-        wordCount = infoPane.querySelector('.word-count');
+        singleWordInfo = infoPane.querySelector('.single-word-info'),
+        wordSelected = singleWordInfo.querySelector('.word-selected'),
+        wordStrongs = singleWordInfo.querySelector('.word-strongs'),
+        wordMorph = singleWordInfo.querySelector('.word-morph'),
+        wordDefBrief = singleWordInfo.querySelector('.word-def-brief'),
+        wordDefLong = singleWordInfo.querySelector('.word-def-long'),
+        wordCount = singleWordInfo.querySelector('.word-count'),
+        multiWordInfo = infoPane.querySelector('.multi-word-info');
 
     return {
 
@@ -315,10 +320,10 @@ function Info() {
             $(paneContent).find('.instruction').hide();
         },
 
-        update: function(info) {
-            if (!info) {
-                return false;
-            }
+        updateSingleWord: function(info) {
+            // if (!info) {
+            //     return false;
+            // }
 
             this.hideInstruction();
             $(wordSelected).html(info.greek);
@@ -329,6 +334,20 @@ function Info() {
             $(wordDefLong).html(info.long);
             $(wordCount).html(info.count);
 
+        },
+
+        updateMultiWord: function(sel, selectedText) {
+            if (!sel.isCollapsed && sel.anchorNode != sel.focusNode) {
+                var range = sel.getRangeAt(0);
+                var nodes = range.cloneContents();
+                range.detach();
+
+                var words = nodes.querySelectorAll('.verse-word');
+                words = Array.prototype.slice.call(words);
+                words.forEach(function(word) {
+                    console.log(word.dataset.verse);
+                });
+            }
         }
 
     };
@@ -424,8 +443,6 @@ exports.Reader = Reader;
 function utils() {
 
     return {
-        // TODO: Buggy. Try selecting a paragraph and then click somewhere in the middle of the selection.
-        //       It adds another word instead of clearing previous selection.
         snapSelectionToWord: function() {
             var sel;
 
