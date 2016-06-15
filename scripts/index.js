@@ -78,6 +78,9 @@ function App() {
 
             document.addEventListener('mouseup', function(e) {
                 utils.snapSelectionToWord();
+                console.log("anchor", window.getSelection().anchorNode);
+                console.log("focus", window.getSelection().focusNode);
+
                 var raw = window.getSelection().toString();
                 var refined = raw.replace(/([^α-ωΑ-Ω\s])+|\s{2,}|[\t\r\n]+/gi, '');
                 refined && console.log(refined);
