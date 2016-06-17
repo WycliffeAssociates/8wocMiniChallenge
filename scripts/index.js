@@ -3,7 +3,9 @@ var Navigator = require('./modules/navigator').Navigator,
     Book = require('./modules/book').Book,
     Info = require('./modules/info').Info;
 
-var utils = require('./modules/utils').utils;
+var utils = require('./modules/utils').utils,
+    ephesiansBook = require('./../lib/books/Ephesians.json'),
+    ephesiansLexicon = require('./../lib/lexicon/lexicon-eph-english.json');
 
 
 function popoverInit(selector) {
@@ -24,7 +26,7 @@ function App() {
 
     return {
 
-        book: new Book(),
+        book: new Book(ephesiansBook, ephesiansLexicon),
 
         navigator: new Navigator(),
 

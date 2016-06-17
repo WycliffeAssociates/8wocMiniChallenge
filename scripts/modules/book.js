@@ -1,33 +1,11 @@
 'use strict';
 
-function Book() {
+function Book(book, lexicon) {
 
-    var bible;
-    var lexi;
+    var bible = reconfigureBook(book);
+    var lexi = lexicon;
     var index = 0;
-    var bookNames = [];
-    init();
-    
-    function init(){
-        // TODO: Look at lib/books and get all the available book names
-        bookNames = ['Ephesians'];
-
-        parseJSON("lib/books/Ephesians.json", 
-            function(json){
-                // console.log(json);
-                bible = reconfigureBook(json);
-            }
-         );
-        //bible = reconfigureBook(bible);
-        //printVerse("Ephesians", "1", "2");
-
-        parseJSON("lib/lexicon/lexicon-eph-english.json", 
-            function(json){
-                // console.log(json);
-                lexi = json;
-            }
-        );
-    }
+    var bookNames = ['Ephesians'];
 
     function getDefinition(strongs){
         var result = "";
